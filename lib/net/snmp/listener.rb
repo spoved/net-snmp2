@@ -1,8 +1,7 @@
 require 'timeout'
 
 module Net::SNMP
-
-# Implements a generic listener for incoming SNMP packets
+  # Implements a generic listener for incoming SNMP packets
 
   class Listener
     include Debug
@@ -19,7 +18,7 @@ module Net::SNMP
     def start(port = 161, interval = 2, max_packet_size = 65_000)
       @interval = interval
       @socket = UDPSocket.new
-      @socket.bind("127.0.0.1", port)
+      @socket.bind('127.0.0.1', port)
       @max_packet_size = max_packet_size
       info "Listening on port #{port}"
       run_loop
@@ -50,7 +49,7 @@ module Net::SNMP
 
     def run_loop
       packet = nil
-      loop {
+      loop do
         begin
           return if @killed
           # TODO: Not exactly the most efficient solution...
@@ -58,7 +57,7 @@ module Net::SNMP
             @packet = @socket.recvfrom(@max_packet_size)
           end
           return if @killed
-          time "Message Processing" do
+          time 'Message Processing' do
             message = Message.parse(@packet)
             @callback[message] if @callback
           end
@@ -67,8 +66,7 @@ module Net::SNMP
         rescue StandardError => ex
           error "Error in listener.\n#{ex}\n  #{ex.backtrace.join("\n  ")}"
         end
-      }
+      end
     end
-
   end
 end

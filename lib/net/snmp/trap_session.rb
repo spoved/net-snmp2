@@ -9,7 +9,7 @@ module Net
       # - port:     The port where the trap will be sent (default = 162)
       def initialize(options = {})
         # Unless the port was supplied in the peername...
-        unless options[:peername][":"]
+        unless options[:peername][':']
           # ...default to standard trap port
           options[:port] ||= 162
         end
@@ -55,7 +55,7 @@ module Net
       def inform(options = {})
         pdu = build_v2_trap_pdu(Constants::SNMP_MSG_INFORM, options)
         response = send_pdu(pdu)
-        if response.kind_of?(PDU)
+        if response.is_a?(PDU)
           response.free # Always free the response PDU
           :success # If Session#send_pdu didn't raise, we succeeded
         else
@@ -80,7 +80,7 @@ module Net
         pdu = PDU.new(Constants::SNMP_MSG_TRAP)
         options[:enterprise] ||= '1.3.6.1.4.1.3.1.1'
         pdu.enterprise = OID.new(options[:enterprise].to_s)
-        pdu.trap_type = options[:trap_type].to_i || 1  # need to check all these defaults
+        pdu.trap_type = options[:trap_type].to_i || 1 # need to check all these defaults
         pdu.specific_type = options[:specific_type].to_i || 0
         pdu.time = options[:uptime].to_i || 1
         pdu.agent_addr = options[:agent_addr] || '127.0.0.1'
@@ -93,14 +93,14 @@ module Net
       end
 
       def build_v2_trap_pdu(pdu_type, options = {})
-        if options[:oid].kind_of?(String)
+        if options[:oid].is_a?(String)
           options[:oid] = Net::SNMP::OID.new(options[:oid])
         end
         options[:uptime] ||= 1
 
         pdu = PDU.new(pdu_type)
-        pdu.add_varbind(:oid => OID.new('sysUpTime.0'), :type => Constants::ASN_TIMETICKS, :value => options[:uptime].to_i)
-        pdu.add_varbind(:oid => OID.new('snmpTrapOID.0'), :type => Constants::ASN_OBJECT_ID, :value => options[:oid])
+        pdu.add_varbind(oid: OID.new('sysUpTime.0'), type: Constants::ASN_TIMETICKS, value: options[:uptime].to_i)
+        pdu.add_varbind(oid: OID.new('snmpTrapOID.0'), type: Constants::ASN_OBJECT_ID, value: options[:oid])
         if options[:varbinds]
           options[:varbinds].each do |vb|
             pdu.add_varbind(vb)
@@ -108,7 +108,6 @@ module Net
         end
         pdu
       end
-
     end
   end
 end

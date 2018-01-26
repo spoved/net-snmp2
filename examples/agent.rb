@@ -1,4 +1,4 @@
-$: << '../lib'
+$LOAD_PATH << '../lib'
 
 require 'net-snmp2'
 
@@ -11,9 +11,9 @@ agent = Net::SNMP::Agent.new
 
 # If the program gets the interrupt signal, tell the agent
 # to stop so the program can exit.
-trap(:INT) {
+trap(:INT) do
   agent.stop
-}
+end
 
 # Using an in-memory Hash to represent our MIB storage
 mib = {
@@ -34,7 +34,6 @@ mib = {
 # encapsulated in the Agent code, and you do not have to
 # implement it yourself.
 agent.provide '1.3' do
-
   get do
     # `oid` is provided by the DSL as the OID object for the current varbind
     #
@@ -43,7 +42,7 @@ agent.provide '1.3' do
     # error, and fatal logging methods.
     info "Got a get request for #{oid}"
 
-    if mib.has_key? oid_str
+    if mib.key? oid_str
       # `reply` is provided by the DSL to set the response for the current varbind.
       # For a GetBulk request, you can use it's alias `add`, which is more natural
       # in that context, when you may be setting multiple response varbinds for a
@@ -63,7 +62,7 @@ agent.provide '1.3' do
 
     # Randomly fail 20% of the time
     if rand > 0.8
-      info "Decided to fail... Sending WRONGTYPE errstat"
+      info 'Decided to fail... Sending WRONGTYPE errstat'
       # `error` sets the error status of the reply to the given integer.
       # The Agent code handles setting the error index behind the scenes,
       # so you don't have to set it here.
@@ -71,7 +70,7 @@ agent.provide '1.3' do
       next
     end
 
-    if mib.has_key? oid_str
+    if mib.key? oid_str
       # Saving the set value in our MIB storage
       mib[oid_str] = value
       # `ok` copies the current varbind to the response,
@@ -97,7 +96,6 @@ agent.provide '1.3' do
       add(oid: "#{oid_str}.#{i}", value: "Bulk value ##{i}")
     end
   end
-
 end
 
 # Start the agent's run loop, listening to port 161

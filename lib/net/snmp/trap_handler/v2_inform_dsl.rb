@@ -11,6 +11,5 @@ module Net::SNMP
     def ok
       message.echo
     end
-
   end
 end

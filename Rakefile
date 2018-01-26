@@ -5,7 +5,7 @@ Bundler::GemHelper.install_tasks
 task :console do
   require 'pry'
   require 'logger'
-  $: << 'lib'
+  $LOAD_PATH << 'lib'
   require 'net-snmp2'
   Net::SNMP::Debug.logger = Logger.new(STDOUT)
   Net::SNMP::Debug.logger.level = Logger::INFO

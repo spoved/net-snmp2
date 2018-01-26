@@ -1,4 +1,4 @@
-$: << '../lib'
+$LOAD_PATH << '../lib'
 require 'net-snmp2'
 
 # Initialize SNMP and give it a logger
@@ -19,7 +19,7 @@ handler = Net::SNMP::TrapHandler.new do
     Specific Type: #{specific_trap_type}
     Agent Address: #{agent_address}
     Uptime: #{uptime}
-    Varbinds: #{varbinds.map {|vb| "#{vb.oid.label}(#{vb.oid}) = #{vb.value}"}.join(', ')}
+    Varbinds: #{varbinds.map { |vb| "#{vb.oid.label}(#{vb.oid}) = #{vb.value}" }.join(', ')}
     EOF
   end
 
@@ -32,7 +32,7 @@ handler = Net::SNMP::TrapHandler.new do
 
     Trap OID: #{trap_oid}
     Uptime: #{uptime}
-    Varbinds: #{varbinds.map {|vb| "#{vb.oid.label}(#{vb.oid}) = #{vb.value}"}.join(', ')}
+    Varbinds: #{varbinds.map { |vb| "#{vb.oid.label}(#{vb.oid}) = #{vb.value}" }.join(', ')}
     EOF
   end
 
@@ -45,7 +45,7 @@ handler = Net::SNMP::TrapHandler.new do
 
     Trap OID: #{trap_oid}
     Uptime: #{uptime}
-    Varbinds: #{varbinds.map {|vb| "#{vb.oid.label}(#{vb.oid}) = #{vb.value}"}.join(', ')}
+    Varbinds: #{varbinds.map { |vb| "#{vb.oid.label}(#{vb.oid}) = #{vb.value}" }.join(', ')}
     EOF
 
     ok
@@ -54,8 +54,8 @@ end
 
 # If the program gets the interrupt signal, tell the trap handler
 # to stop so the program can exit.
-trap(:INT) {
+trap(:INT) do
   handler.stop
-}
+end
 
 handler.listen(162)

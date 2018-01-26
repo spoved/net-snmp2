@@ -8,7 +8,7 @@ require 'rspec'
 # setting thread_safe should fix this
 # Net::SNMP::Debug.logger = Logger.new(STDOUT)
 # Net::SNMP::Debug.logger.level = Logger::INFO
-Net::SNMP::thread_safe = true
+Net::SNMP.thread_safe = true
 Net::SNMP.init
 
 # Must require after calling `SNMP.init`

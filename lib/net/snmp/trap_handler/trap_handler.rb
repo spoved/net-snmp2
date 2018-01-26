@@ -9,7 +9,7 @@ module Net::SNMP
     def initialize(&block)
       @listener = Net::SNMP::Listener.new
       @listener.on_message(&method(:process_trap))
-      self.instance_eval(&block)
+      instance_eval(&block)
     end
 
     private

@@ -1,6 +1,6 @@
 #! /usr/bin/env ruby
 
-$: << "#{File.dirname(__FILE__)}/../lib"
+$LOAD_PATH << "#{File.dirname(__FILE__)}/../lib"
 require 'logger'
 require 'optparse'
 require 'erb'
@@ -10,18 +10,18 @@ require 'net/snmp/repl/manager_repl'
 
 usage = '
 Usage: net-snmp2 [-v VERSION] [-c COMMUNITY] [HOST[:PORT]]
-'.sub("\n", "")
+'.sub("\n", '')
 
 # Default option values
 options = {
-  :version => '2c',
-  :community => 'public',
-  :peername => 'localhost',
-  :port => '161'
+  version: '2c',
+  community: 'public',
+  peername: 'localhost',
+  port: '161'
 }
 
 OptionParser.new do |opt|
-  opt.on("-v VERSION") do |version|
+  opt.on('-v VERSION') do |version|
     case version
     when /^1$/
       options[:version] = '1'
@@ -36,7 +36,7 @@ OptionParser.new do |opt|
     end
   end
 
-  opt.on("-c COMMUNITY") do |community|
+  opt.on('-c COMMUNITY') do |community|
     options[:community] = community
   end
 
@@ -44,11 +44,10 @@ OptionParser.new do |opt|
     puts usage
     exit
   end
-
 end.parse!
 
 session = nil
-if ARGV.length > 0
+unless ARGV.empty?
   peername = ARGV[0]
   m = peername.match /^([^:]*)(:([0-9]*))?$/
   options[:peername] = m[1]
