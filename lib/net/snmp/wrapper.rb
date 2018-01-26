@@ -31,10 +31,10 @@ module Net
       def self.print_varbind(v)
         puts '---------------------VARBIND------------------------'
         puts %(
-          name_length #{v.name_length}
-          name #{v.name.read_array_of_long(v.name_length).join('.')}
-          type = #{v.type}
-        )
+      name_length #{v.name_length}
+      name #{v.name.read_array_of_long(v.name_length).join('.')}
+      type = #{v.type}
+             )
       end
 
       class VariableList < NiceFFI::Struct
@@ -56,11 +56,11 @@ module Net
       def self.print_pdu(p)
         puts '--------------PDU---------------'
         puts %(
-          version = #{p.version}
-          command = #{p.command}
-          errstat = #{p.errstat}
-          errindex = #{p.errindex}
-        )
+      version = #{p.version}
+      command = #{p.command}
+      errstat = #{p.errstat}
+      errindex = #{p.errindex}
+             )
         v = p.variables.pointer
         puts '-----VARIABLES------'
         until v.null?
@@ -68,6 +68,53 @@ module Net
           print_varbind(var)
           v = var.next_variable
         end
+      end
+
+      class UsmUser < NiceFFI::Struct
+        # 00061         u_char         *engineID;
+        # 00062         size_t          engineIDLen;
+        # 00063         char           *name;
+        # 00064         char           *secName;
+        # 00065         oid            *cloneFrom;
+        # 00066         size_t          cloneFromLen;
+        # 00067         oid            *authProtocol;
+        # 00068         size_t          authProtocolLen;
+        # 00069         u_char         *authKey;
+        # 00070         size_t          authKeyLen;
+        # 00071         oid            *privProtocol;
+        # 00072         size_t          privProtocolLen;
+        # 00073         u_char         *privKey;
+        # 00074         size_t          privKeyLen;
+        # 00075         u_char         *userPublicString;
+        # 00076         size_t          userPublicStringLen;
+        # 00077         int             userStatus;
+        # 00078         int             userStorageType;
+        # 00079        /* these are actually DH * pointers but only if openssl is avail. */
+        # 00080         void           *usmDHUserAuthKeyChange;
+        # 00081         void           *usmDHUserPrivKeyChange;
+        # 00082         struct usmUser *next;
+        # 00083         struct usmUser *prev;
+
+        layout(
+          :engineID, :uchar,
+          :engineIDLen, :size_t,
+          :name, :char,
+          :secName, :char,
+          :cloneFrom, :pointer,
+          :cloneFromLen, :size_t,
+          :authProtocol, :pointer,
+          :authProtocolLen, :size_t,
+          :authKey, :u_char,
+          :authKeyLen, :size_t,
+          :privProtocol, :pointer,
+          :privProtocolLen, :size_t,
+          :privKey, :u_char,
+          :privKeyLen, :size_t,
+          :userPublicString, :u_char,
+          :userPublicStringLen, :size_t,
+          :userStatus, :int,
+          :userStorageType, :int
+        )
       end
 
       class SnmpPdu < NiceFFI::Struct
@@ -117,12 +164,12 @@ module Net
       def self.print_session(s)
         puts '-------------------SESSION---------------------'
         puts %(
-          peername = #{s.peername.read_string}
-          community = #{s.community.read_string(s.community_len)}
-          s_errno = #{s.s_errno}
-          s_snmp_errno = #{s.s_snmp_errno}
-          securityAuthKey = #{s.securityAuthKey.to_ptr.read_string}
-        )
+      peername = #{s.peername.read_string}
+      community = #{s.community.read_string(s.community_len)}
+      s_errno = #{s.s_errno}
+      s_snmp_errno = #{s.s_snmp_errno}
+      securityAuthKey = #{s.securityAuthKey.to_ptr.read_string}
+             )
       end
 
       class SnmpSession < NiceFFI::Struct
@@ -221,7 +268,7 @@ module Net
           :label, :string,
           :subid, :u_long,
           :modid, :int,
-          :number_modules, :int,  # Length of module_list array
+          :number_modules, :int, # Length of module_list array
           :module_list, :pointer, # Array of modids (pointer to int)
           :tc_index, :int,
           :type, :int,
@@ -249,6 +296,7 @@ module Net
       class << self
         include Net::SNMP::Debug
         alias af attach_function
+
         def attach_function(*args)
           af(*args)
         rescue Exception => ex
@@ -384,6 +432,11 @@ module Net
       # struct module  *find_module(int modid);
       attach_function :find_module, [:int], Module.typed_pointer
 
+      # USM User functions
+      # Needed for: https://stackoverflow.com/questions/18380435/net-snmp-is-not-changing-auth-and-priv-protocol-correctly
+      # http://www.net-snmp.org/dev/agent/snmpusm_8h-source.html
+      attach_function :clear_user_list, [], :void
+
       def self.get_fd_set
         FFI::MemoryPointer.new(:pointer, 128)
       end
@@ -411,6 +464,7 @@ module FFI
     class << self
       include Net::SNMP::Debug
       alias af attach_function
+
       def attach_function(*args)
         af(*args)
       rescue Exception => ex
@@ -418,6 +472,7 @@ module FFI
       end
 
       alias av attach_variable
+
       def attach_variable(*args)
         av(*args)
       rescue Exception => ex
