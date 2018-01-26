@@ -1,6 +1,6 @@
 #! /usr/bin/env ruby
 
-$: << "#{File.dirname(__FILE__)}/../lib"
+$LOAD_PATH << "#{File.dirname(__FILE__)}/../lib"
 require 'logger'
 require 'optparse'
 require 'erb'
@@ -59,8 +59,8 @@ USAGE
 root_node = nil
 erb_template = nil
 
-OptionParser.new do|opts|
-  opts.on( '-h', '--help') do
+OptionParser.new do |opts|
+  opts.on('-h', '--help') do
     puts usage
     exit
   end
@@ -70,21 +70,21 @@ OptionParser.new do|opts|
 
     Net::SNMP::Debug.logger = Logger.new(STDERR)
     Net::SNMP::Debug.logger.level = case level
-      when /debug/i
-        Logger::DEBUG
-      when /info/i
-        Logger::INFO
-      when /warn/i
-        Logger::WARN
-      when /error/i
-        Logger::ERROR
-      when /fatal/i
-        Logger::FATAL
-      else
-        puts "Invalid log level: #{level}"
-        puts
-        puts usage
-        exit(1)
+                                    when /debug/i
+                                      Logger::DEBUG
+                                    when /info/i
+                                      Logger::INFO
+                                    when /warn/i
+                                      Logger::WARN
+                                    when /error/i
+                                      Logger::ERROR
+                                    when /fatal/i
+                                      Logger::FATAL
+                                    else
+                                      puts "Invalid log level: #{level}"
+                                      puts
+                                      puts usage
+                                      exit(1)
     end
   end
 
@@ -101,7 +101,6 @@ OptionParser.new do|opts|
       exit(1)
     end
   end
-
 end.parse!
 
 case ARGV.length
@@ -113,7 +112,7 @@ when 2
   root_node = Net::SNMP::MIB.get_node(ARGV[0])
   erb_template = File.read(ARGV[1])
 else
-  puts "Invalid arguments..."
+  puts 'Invalid arguments...'
   puts
   puts usage
   exit(1)

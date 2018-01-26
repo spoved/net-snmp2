@@ -26,7 +26,7 @@ module Net::SNMP::MIB
   end
 %>
 <% end -%>
-'.sub!("\n", "") # Remove leading newline
+'.sub!("\n", '') # Remove leading newline
 
     JSON = json_template = '
 [
@@ -43,6 +43,6 @@ module Net::SNMP::MIB
   }<% } -%>
 
 ]
-'.sub!("\n", "")
+'.sub!("\n", '')
   end
 end

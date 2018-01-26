@@ -13,22 +13,14 @@ module Net::SNMP
     end
 
     def oid
-      vb = varbinds.find{|vb| vb.oid.to_s == Constants::OID_SNMP_TRAP_OID}
-      if vb
-        vb.value
-      else
-        nil
-      end
+      vb = varbinds.find { |vb| vb.oid.to_s == Constants::OID_SNMP_TRAP_OID }
+      vb.value if vb
     end
     alias trap_oid oid
 
     def uptime
-      vb = varbinds.find{|vb| vb.oid.to_s == Constants::OID_SYS_UP_TIME_INSTANCE}
-      if vb
-        vb.value
-      else
-        nil
-      end
+      vb = varbinds.find { |vb| vb.oid.to_s == Constants::OID_SYS_UP_TIME_INSTANCE }
+      vb.value if vb
     end
 
     def varbinds

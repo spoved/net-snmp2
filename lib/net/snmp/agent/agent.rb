@@ -1,8 +1,7 @@
 module Net::SNMP
-
-# Agents delegate messages from the Net::SNMP::Listener to
-# providers, which supply the actual responses to the varbinds
-# in the request. See Net::SNMP::ProviderDsl
+  # Agents delegate messages from the Net::SNMP::Listener to
+  # providers, which supply the actual responses to the varbinds
+  # in the request. See Net::SNMP::ProviderDsl
 
   class Agent
     include Debug
@@ -74,6 +73,5 @@ module Net::SNMP
       end
       response_pdu
     end
-
   end
 end

@@ -11,12 +11,10 @@ module Net::SNMP
       class << self
         include Debug
         def get_node(oid)
-          if oid.kind_of?(String)
-            oid = OID.new(oid)
-          end
-          struct = Wrapper.get_tree(oid.pointer, oid.length_pointer.read_int, Wrapper.get_tree_head().pointer)
+          oid = OID.new(oid) if oid.is_a?(String)
+          struct = Wrapper.get_tree(oid.pointer, oid.length_pointer.read_int, Wrapper.get_tree_head.pointer)
           node = new(struct.pointer)
-          warn "OID #{oid.to_s} not found in MIB" unless node.in_mib?
+          warn "OID #{oid} not found in MIB" unless node.in_mib?
           node
         end
       end
@@ -30,7 +28,7 @@ module Net::SNMP
         when FFI::Pointer
           @struct = Wrapper::Tree.new(arg)
         else
-          raise "invalid type"
+          raise 'invalid type'
         end
       end
 
@@ -39,14 +37,12 @@ module Net::SNMP
         # existing in the mib, but the parent will be null.
         # Of course, the parent is null for the root node as well,
         # so ignore that case.
-        (!@struct.parent.null?) || oid.to_s == '1'
+        !@struct.parent.null? || oid.to_s == '1'
       end
       alias in_mib? exists_in_mib?
 
       def module
-        unless @module
-          @module = Module.find(modid)
-        end
+        @module ||= Module.find(modid)
         @module
       end
 
@@ -111,12 +107,11 @@ module Net::SNMP
       def enums
         return to_enum __method__ unless block_given?
         enum = struct.enums
-        while !enum.null?
-          yield({value: enum.value, label: enum.label.read_string})
+        until enum.null?
+          yield({ value: enum.value, label: enum.label.read_string })
           enum = enum.next
         end
       end
-
     end
   end
 end

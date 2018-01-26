@@ -1,4 +1,4 @@
-require_relative "./spec_helper"
+require_relative './spec_helper'
 
 include Net::SNMP
 include Net::SNMP::Debug
@@ -8,10 +8,10 @@ $test_agent = Agent.new
 $test_agent.provide do
   get do
     info "GET #{variable}"
-    if $test_mib.has_key? variable
+    if $test_mib.key? variable
       reply $test_mib[variable]
     else
-      info "No such object"
+      info 'No such object'
       no_such_object
     end
   end

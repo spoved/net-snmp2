@@ -1,13 +1,12 @@
 require_relative './spec_helper'
 
-describe "async" do
-  context "version 1" do
-
+describe 'async' do
+  context 'version 1' do
     describe 'get' do
-      it "retrieves scalar values" do
+      it 'retrieves scalar values' do
         did_callback = false
-        sess = Net::SNMP::Session.open(:peername => 'localhost', port: 161, :community => 'public', version: '2c') do |s|
-          s.get(["sysDescr.0", "sysContact.0"]) do |op, pdu|
+        sess = Net::SNMP::Session.open(peername: 'localhost', port: 161, community: 'public', version: '2c') do |s|
+          s.get(['sysDescr.0', 'sysContact.0']) do |_op, pdu|
             did_callback = true
             expect(pdu.varbinds[0].value).to eq($test_mib['sysDescr.0'])
             expect(pdu.varbinds[1].value).to eq($test_mib['sysContact.0'])
@@ -17,11 +16,11 @@ describe "async" do
         expect(did_callback).to be(true)
       end
 
-      context "when a timeout occurrs" do
-        it "calls back with :timeout when a timeout occurrs" do
+      context 'when a timeout occurrs' do
+        it 'calls back with :timeout when a timeout occurrs' do
           did_callback = false
-          sess = Net::SNMP::Session.open(:peername => 'www.yahoo.com', :timeout => 1, :retries => 0) do |sess|
-            sess.get("sysDescr.0") do |op, pdu|
+          sess = Net::SNMP::Session.open(peername: 'www.yahoo.com', timeout: 1, retries: 0) do |sess|
+            sess.get('sysDescr.0') do |op, _pdu|
               did_callback = true
               expect(op).to eql(:timeout)
             end
@@ -35,25 +34,25 @@ describe "async" do
     end
 
     describe 'get_next'
-      it "getnext should work" do
-        did_callback = false
-        Net::SNMP::Session.open(:peername => 'localhost', :community => 'public', version: '2c') do |s|
-          s.get_next(["sysDescr", "sysContact"]) do |op, pdu|
-            did_callback = true
-            expect(pdu.varbinds[0].value).to eq $test_mib['sysDescr.0']
-            expect(pdu.varbinds[1].value).to eq $test_mib['sysContact.0']
-          end
-        end
-        Net::SNMP::Dispatcher.select(false)
-        expect(did_callback).to be(true)
-      end
-    end
-
-  context "version 2" do
-    it "get should work" do
+    it 'getnext should work' do
       did_callback = false
-      Net::SNMP::Session.open(:peername => 'localhost', :community => 'public', :version => '2c') do |s|
-        s.get(["sysDescr.0", "sysContact.0"]) do |op, pdu|
+      Net::SNMP::Session.open(peername: 'localhost', community: 'public', version: '2c') do |s|
+        s.get_next(%w[sysDescr sysContact]) do |_op, pdu|
+          did_callback = true
+          expect(pdu.varbinds[0].value).to eq $test_mib['sysDescr.0']
+          expect(pdu.varbinds[1].value).to eq $test_mib['sysContact.0']
+        end
+      end
+      Net::SNMP::Dispatcher.select(false)
+      expect(did_callback).to be(true)
+    end
+  end
+
+  context 'version 2' do
+    it 'get should work' do
+      did_callback = false
+      Net::SNMP::Session.open(peername: 'localhost', community: 'public', version: '2c') do |s|
+        s.get(['sysDescr.0', 'sysContact.0']) do |_op, pdu|
           did_callback = true
           expect(pdu.varbinds[0].value).to eq $test_mib['sysDescr.0']
           expect(pdu.varbinds[1].value).to eq $test_mib['sysContact.0']
@@ -63,10 +62,10 @@ describe "async" do
       expect(did_callback).to be(true)
     end
 
-    it "getnext should work" do
+    it 'getnext should work' do
       did_callback = false
-      Net::SNMP::Session.open(:peername => 'localhost', :community => 'public', :version => '2c') do |s|
-        s.get_next(["sysDescr", "sysContact"]) do |op, pdu|
+      Net::SNMP::Session.open(peername: 'localhost', community: 'public', version: '2c') do |s|
+        s.get_next(%w[sysDescr sysContact]) do |_op, pdu|
           did_callback = true
           expect(pdu.varbinds[0].value).to eq $test_mib['sysDescr.0']
           expect(pdu.varbinds[1].value).to eq $test_mib['sysContact.0']
@@ -75,7 +74,6 @@ describe "async" do
       Net::SNMP::Dispatcher.select(false)
       expect(did_callback).to be(true)
     end
-
   end
 
   # context "version 3" do
@@ -124,5 +122,5 @@ describe "async" do
   #     sess.close
   #     expect(did_callback).to be(true)
   #   end
-  #end
+  # end
 end

@@ -15,7 +15,7 @@ module Net::SNMP
     end
 
     def initialize(struct)
-      raise "Tried to initialize null module" if struct.null?
+      raise 'Tried to initialize null module' if struct.null?
       @struct = struct
     end
 
@@ -34,6 +34,5 @@ module Net::SNMP
         self.class.new(@struct.next)
       end
     end
-
   end
 end

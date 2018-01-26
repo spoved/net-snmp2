@@ -1,10 +1,9 @@
 module Net::SNMP
-
-# A ProviderDsl represents the context in which each handler
-# for the varbinds of a single message are executed. The ProviderDsl
-# object lives only as long as a single message is being processed,
-# and offers convenience functions for accessing the members of the
-# request as well as providing responses for each varbind in the request.
+  # A ProviderDsl represents the context in which each handler
+  # for the varbinds of a single message are executed. The ProviderDsl
+  # object lives only as long as a single message is being processed,
+  # and offers convenience functions for accessing the members of the
+  # request as well as providing responses for each varbind in the request.
 
   class ProviderDsl
     include Debug
@@ -70,7 +69,7 @@ module Net::SNMP
     #   varbind, with the current varbind's oid, and the type is derived
     #   as with PDU#add_varbind
     def reply(varbind_options)
-      if varbind_options.kind_of?(Hash)
+      if varbind_options.is_a?(Hash)
         varbind_options[:oid] ||= varbind.oid
         add_varbind(varbind_options)
       else
@@ -93,7 +92,7 @@ module Net::SNMP
     # Adds a varbind to the response indicating that no such object
     # exists at the given oid. If no oid is supplied, or if oid is nil,
     # then the oid from the current varbind is used.
-    def no_such_object(oid=nil)
+    def no_such_object(oid = nil)
       oid ||= varbind.oid
       add_varbind(oid: oid, type: Constants::SNMP_NOSUCHOBJECT)
     end
@@ -101,7 +100,7 @@ module Net::SNMP
     # Adds a varbind to the response indicating that no such instance
     # exists at the given oid. If no oid is supplied, or if oid is nil,
     # then the oid from the current varbind is used.
-    def no_such_instance(oid=nil)
+    def no_such_instance(oid = nil)
       oid ||= varbind.oid
       add_varbind(oid: oid, type: Constants::SNMP_NOSUCHINSTANCE)
     end
@@ -130,6 +129,5 @@ module Net::SNMP
     end
     alias errstat error
     alias error_status error
-
   end
 end

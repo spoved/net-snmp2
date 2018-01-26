@@ -39,6 +39,5 @@ module Net::SNMP
     def varbinds
       pdu.varbinds
     end
-
   end
 end

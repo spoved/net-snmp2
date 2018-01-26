@@ -6,8 +6,8 @@ require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 # and it occupies port 162 but doesn't respond to the informs
 
 describe Net::SNMP::TrapSession do
-  it "should send a v1 trap" do
-    Net::SNMP::TrapSession.open(:peername => 'localhost:163', :version => '1', :community => 'public') do |sess|
+  it 'should send a v1 trap' do
+    Net::SNMP::TrapSession.open(peername: 'localhost:163', version: '1', community: 'public') do |sess|
       res = sess.trap(
         enterprise: '1.3.1',
         trap_type: 6,
@@ -19,17 +19,17 @@ describe Net::SNMP::TrapSession do
     end
   end
 
-  it "should send v2 trap" do
-    Net::SNMP::TrapSession.open(:peername => 'localhost:163', :version => '2c') do |sess|
-      res = sess.trap_v2(:oid => 'sysContact.0', :uptime => 1000)
+  it 'should send v2 trap' do
+    Net::SNMP::TrapSession.open(peername: 'localhost:163', version: '2c') do |sess|
+      res = sess.trap_v2(oid: 'sysContact.0', uptime: 1000)
       expect(res).to eq(:success)
     end
   end
 
-  it "should send a v2 inform" do
+  it 'should send a v2 inform' do
     did_callback = false
-    Net::SNMP::TrapSession.open(:peername => 'localhost:163', :version => '2c') do |sess|
-      resp = sess.inform(:oid => 'coldStart.0')
+    Net::SNMP::TrapSession.open(peername: 'localhost:163', version: '2c') do |sess|
+      resp = sess.inform(oid: 'coldStart.0')
       expect(resp).to eq(:success)
     end
   end

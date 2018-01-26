@@ -1,7 +1,6 @@
 module Net
   module SNMP
     module MIB
-
       # Configures the MIB directory search path (using add_mibdir ), sets up the internal
       # MIB framework, and then loads the appropriate MIB modules (using netsnmp_read_module
       # and  read_mib). It should be called before any other routine that manipulates
@@ -32,11 +31,11 @@ module Net
         node = Node.get_node(oid)
         if oid =~ /^[0-9.]*$/
           # Node label + instance indexes from argument
-          "#{node.label}#{oid.sub(node.oid.to_s, "")}"
+          "#{node.label}#{oid.sub(node.oid.to_s, '')}"
         else
           # Node OID + instance indexes from argument
           # (Regex ensures the module qualifier is also removed, if present)
-          "#{node.oid.to_s}#{oid.sub(%r[.*#{node.label.to_s}], "")}"
+          "#{node.oid}#{oid.sub(/.*#{node.label.to_s}/, '')}"
         end
       end
 
@@ -62,7 +61,6 @@ module Net
       def self.read_mib(filename)
         Wrapper.read_mib(filename)
       end
-
     end
   end
 end

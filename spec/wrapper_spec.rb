@@ -1,9 +1,9 @@
 require File.expand_path(File.dirname(__FILE__) + '/spec_helper')
 
-describe "Net::SNMP::Wrapper" do
+describe 'Net::SNMP::Wrapper' do
   def init_session
-    community = "public"
-    peername = "localhost"
+    community = 'public'
+    peername = 'localhost'
 
     @session = Net::SNMP::Wrapper::SnmpSession.new(nil)
     Net::SNMP::Wrapper.snmp_sess_init(@session.pointer)
@@ -22,11 +22,11 @@ describe "Net::SNMP::Wrapper" do
     @oid_len_ptr = FFI::MemoryPointer.new(:size_t)
     @oid_len_ptr.write_int(Net::SNMP::Constants::MAX_OID_LEN)
 
-    Net::SNMP::Wrapper.get_node("sysDescr.0", @oid_ptr, @oid_len_ptr)
+    Net::SNMP::Wrapper.get_node('sysDescr.0', @oid_ptr, @oid_len_ptr)
     Net::SNMP::Wrapper.snmp_pdu_add_variable(@pdu.pointer, @oid_ptr, @oid_len_ptr.read_int, Net::SNMP::Constants::ASN_NULL, nil, 0)
   end
 
-  it "wrapper should snmpget synchronously" do
+  it 'wrapper should snmpget synchronously' do
     init_session
 
     make_pdu
@@ -40,30 +40,30 @@ describe "Net::SNMP::Wrapper" do
     expect(value).to eq $test_mib['sysDescr.0']
   end
 
-  it "wrapper should snmpget asynchronously" do
-      init_session
-      make_pdu
-      did_callback = 0
-      result = nil
-      @session.callback = lambda do |operation, session, reqid, pdu_ptr, magic|
-        did_callback = 1
-        pdu = Net::SNMP::Wrapper::SnmpPdu.new(pdu_ptr)
-        variables = Net::SNMP::Wrapper::VariableList.new(pdu.variables)
-        result = variables.val[:string].read_string(variables.val_len)
-        0
-      end
-      sess = Net::SNMP::Wrapper.snmp_open(@session.pointer)
-      Net::SNMP::Wrapper.snmp_send(sess.pointer, @pdu)
-      sleep 1
-      fdset = FFI::MemoryPointer.new(1024 * 8)
-      fds = FFI::MemoryPointer.new(:int)
-      tval = Net::SNMP::Wrapper::TimeVal.new
-      block = FFI::MemoryPointer.new(:int)
-      block.write_int(1)
-      Net::SNMP::Wrapper.snmp_select_info(fds, fdset, tval.pointer, block )
-      FFI::LibC.select(fds.read_int, fdset, nil, nil, nil)
-      Net::SNMP::Wrapper.snmp_read(fdset)
-      expect(did_callback).to be(1)
-      expect(result).to eq $test_mib['sysDescr.0']
+  it 'wrapper should snmpget asynchronously' do
+    init_session
+    make_pdu
+    did_callback = 0
+    result = nil
+    @session.callback = lambda do |_operation, _session, _reqid, pdu_ptr, _magic|
+      did_callback = 1
+      pdu = Net::SNMP::Wrapper::SnmpPdu.new(pdu_ptr)
+      variables = Net::SNMP::Wrapper::VariableList.new(pdu.variables)
+      result = variables.val[:string].read_string(variables.val_len)
+      0
+    end
+    sess = Net::SNMP::Wrapper.snmp_open(@session.pointer)
+    Net::SNMP::Wrapper.snmp_send(sess.pointer, @pdu)
+    sleep 1
+    fdset = FFI::MemoryPointer.new(1024 * 8)
+    fds = FFI::MemoryPointer.new(:int)
+    tval = Net::SNMP::Wrapper::TimeVal.new
+    block = FFI::MemoryPointer.new(:int)
+    block.write_int(1)
+    Net::SNMP::Wrapper.snmp_select_info(fds, fdset, tval.pointer, block)
+    FFI::LibC.select(fds.read_int, fdset, nil, nil, nil)
+    Net::SNMP::Wrapper.snmp_read(fdset)
+    expect(did_callback).to be(1)
+    expect(result).to eq $test_mib['sysDescr.0']
   end
 end
